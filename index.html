@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+<title>手機旋轉CSS 3D</title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<style>
+html, body{
+	margin:0;
+	border:none;
+	padding:0;
+}
+.camera{
+	margin:30px;
+	width:200px;
+	height:200px;
+	perspective-origin:50% 50%;
+	-moz-perspective-origin:50% 50%;
+	-webkit-perspective-origin:50% 50%;
+	perspective:1200px;
+	-moz-perspective:1200px;
+	-webkit-perspective:1200px;
+}
+.space{
+	position:relative;
+	width:100%;
+	height:100%;
+	transform-style:preserve-3d;
+	-moz-transform-style:preserve-3d;
+	-webkit-transform-style:preserve-3d;
+	transform-origin:200px 200px -100px;
+	-moz-transform-origin:200px 200px -100px;
+	-webkit-transform-origin:200px 200px -100px;
+	transform:rotateX(30deg) rotateY(30deg) rotateZ(0deg);
+}
+.space div{
+	position:absolute;
+	width:200px;
+	height:200px;
+	font-size:100px;
+	text-align:center;
+	line-height:200px;
+}
+.box1{
+	background:rgba(255,0,0,.8);
+	transform:translateX(100px) translateY(100px);
+	-moz-transform:translateX(100px) translateY(100px);
+	-webkit-transform:translateX(100px) translateY(100px);
+}
+.box2{
+	background:rgba(255,255,0,.8);
+	transform-origin:left top;
+	-moz-transform-origin:left top;
+	-webkit-transform-origin:left top;
+	transform:translateX(300px) translateY(100px) rotateY(90deg);
+	-moz-transform:translateX(300px) translateY(100px) rotateY(90deg);
+	-webkit-transform:translateX(300px) translateY(100px) rotateY(90deg);
+}
+.box3{
+	background:rgba(0,255,0,.8);
+	transform:translateX(100px) translateY(100px) translateZ(-200px) rotateY(180deg);
+	-moz-transform:translateX(100px) translateY(100px) translateZ(-200px) rotateY(180deg);
+	-webkit-transform:translateX(100px) translateY(100px) translateZ(-200px) rotateY(180deg);
+}
+.box4{
+	background:rgba(255,0,255,.8);
+	transform-origin:right top;
+	-moz-transform-origin:right top;
+	-webkit-transform-origin:right top;
+	transform:translateX(-100px) translateY(100px) rotateY(-90deg);
+	-moz-transform:translateX(-100px) translateY(100px) rotateY(-90deg);
+	-webkit-transform:translateX(-100px) translateY(100px) rotateY(-90deg);
+}
+.box5{
+	background:rgba(0,0,255,.8);
+	transform-origin:center bottom;
+	-moz-transform-origin:center bottom;
+	-webkit-transform-origin:center bottom;
+	transform:translateX(100px) translateY(-100px) rotateX(90deg);
+	-moz-transform:translateX(100px) translateY(-100px) rotateX(90deg);
+	-webkit-transform:translateX(100px) translateY(-100px) rotateX(90deg);
+}
+.box6{
+	background:rgba(0,255,255,.8);
+	transform-origin:center top;
+	-moz-transform-origin:center top;
+	-webkit-transform-origin:center top;
+	transform:translateX(100px) translateY(300px) rotateX(-90deg);
+	-moz-transform:translateX(100px) translateY(300px) rotateX(-90deg);
+	-webkit-transform:translateX(100px) translateY(300px) rotateX(-90deg);
+}
+#cover{
+	background:#CCC;
+	font-size:50px;
+	display:block;
+	z-index:9999;
+	position:absolute;
+	width:100%;
+	margin:0;
+	padding:0;
+	border:none;
+	text-align:center;
+}
+</style>
+</head>
+<body>
+    <div id="cover">Reseting...</div>
+    <div id="details" style="min-height:100px; background:#CF9">
+    請旋轉手機(陀螺儀在手機垂直狀態不穩定)
+    </div>
+    <button type="button" onClick="_reset()">Reset</button>
+	<div class="camera">
+		<div class="space">
+			<div class="box1">1</div>
+			<div class="box2">2</div>
+			<div class="box3">3</div>
+			<div class="box4">4</div>
+			<div class="box5">5</div>
+			<div class="box6">6</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+last = {x:0, y:0, z:0};
+var x_value = 0,
+	y_value = 0,
+	z_value = 0;
+if(window.DeviceOrientationEvent) {
+	window.addEventListener('deviceorientation', function(event) {
+		var detail = document.getElementById("details"),
+      		alpha = event.alpha,
+      		beta = event.beta,
+		  	gamma = event.gamma;
+		detail.innerHTML = "請旋轉手機<br>"+
+		"rotateX(beta)：<span id='x'>"+ beta +"</span><br>"+
+		"rotateY(gamma)：<span id='y'>"+ gamma +"</span><br>"+
+		"rotateZ(alpha)：<span id='z'>"+ alpha +"</span>";
+		$('.space').css('transform','rotateX('+(beta-last.x)+'deg)'+' rotateY('+(-gamma+last.y)+'deg)'+' rotateZ('+(alpha-last.z)+'deg)');
+	}, false);
+}
+else{
+	document.querySelector('body').innerHTML = '你的瀏覽器不支援喔';
+}
+var h = $(window).height();
+$("#cover").css({height:h, lineHeight:h+"px"})
+$(document).ready(function(e) {
+	setTimeout('$("#cover").fadeOut(500)',1500);
+	setTimeout('setnum();',1000);
+});
+function _reset(){
+	$("#cover").fadeIn(0);
+	setTimeout('$("#cover").fadeOut(500)',1500);
+	setTimeout('setnum();',1000);
+}
+function setnum(){
+	var x_value = document.getElementById("x").innerHTML,
+		y_value = document.getElementById("y").innerHTML,
+		z_value = document.getElementById("z").innerHTML;
+		x_value = Number(x_value);
+		y_value = Number(y_value);
+		z_value = Number(z_value);
+	last = {x:x_value, y:y_value, z:z_value};
+}
+function remove_cover(){
+	;
+}
+</script>
+</html>
